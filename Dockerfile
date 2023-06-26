@@ -16,9 +16,9 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Copy the test.py file to the container
-COPY test.py .
+COPY nya_file.py .
 
 
 
 # Set the entrypoint command to run your FastAPI app
-CMD ["uvicorn", "test:app", "--host", "0.0.0.0"]
+CMD ["uvicorn", "nya_file:app", "--host", "0.0.0.0"]
