@@ -47,7 +47,6 @@ if not os.path.exists("faiss_db"):
 if not os.path.exists("files"):
     os.makedirs("files")
 dbs = {}
-prompt = {}
 @app.post("/upload")
 async def upload_file(user_id: str,file: UploadFile = File(...)):
     try:
@@ -98,11 +97,10 @@ async def askqa(user_id:str,query: str = 'brief explanation of this case' ):
     get_chat_history=lambda h : h,
     verbose=False)
     try:
-        prompt[user_id] = query
-        response = qa({"question": prompt[user_id]})
+        response = qa({"question": query})
         suggestion = qa({"question": "suggest me three questions similar to the previous questions"})
         suggestion = list(suggestion['answer'].split('?'))
-        return {'answer': response['answer'],'suggestion':suggestion}
+        return {'answer': response[user_id],'suggestion':suggestion}
     except requests.exceptions.HTTPError as err:
         # Handle HTTP errors here
         return JSONResponse(status_code=404, content={'error': str(err)})
@@ -116,7 +114,6 @@ async def clearall_user(user_id: str):
         if user_id in memory:
             del memory[user_id]
             del dbs[db_name]
-            del prompt[user_id]
         return JSONResponse(content={'message': f'Cache cleared for user {user_id}'})
     except FileNotFoundError as file_err:
         return JSONResponse(status_code=404, content={'error': f"Cache does not exist for user {user_id}: {str(file_err)}"})
